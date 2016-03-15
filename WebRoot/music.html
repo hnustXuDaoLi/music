@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Java开发WebQQ音乐点歌系统</title>
+
+<meta http-equiv="keywords" content="keyword1,keyword2,keyword3">
+<meta http-equiv="description" content="this is my page">
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+<!--<link rel="stylesheet" type="text/css" href="./styles.css">-->
+<style type="text/css">
+*{margin:0;padding:0;}
+body{background:url(images/bg.jpg) no-repeat top center;font-size:12px;font-family:"微软雅黑";color:#666;}
+/*music start*/
+.music{width:960px;height:250px;background:url(images/banner.jpg)no-repeat;margin:50px 80px;position:relative;}
+.music ul li{list-style:none;position:absolute;}
+.music ul .m_one{left:10px;top:30px;}
+.music ul .m_one a img{border-radius:30px;}
+.music ul .m_two{left:150px;top:60px;}
+.music ul .m_two a img{border-radius:50px;}
+.music ul .m_three{left:300px;top:63px;}
+.music ul .m_three a img{border-radius:75px;}
+.music ul .m_four{left:580px;top:160px;}
+.music ul .m_four a img{border-radius:30px;}
+.music ul .m_five{left:480px;top:20px;}
+.music ul .m_five a img{border-radius:45px;}
+/*end music*/
+/*player start*/
+.player{width:563px;height:115px;background:#000;position:absolute;bottom:15px;left:0;box-shadow:0 0 20px #000;}
+.player .p_pic img{margin-top:12px;float:left;}
+.player .p_pic p{font-size:20px;color:#fff;line-height:115px;float:left;padding-left:20px;}
+.player .p_btn{width:180px;height:50px;float:left;margin:32px 0 0 60px;}
+.player .p_btn a{display:block;background:url("images/sucai.jpg") no-repeat;float:left;margin:0px 0px;}
+.player .p_btn .b_pre{width:50px;height:50px;background-position:-19px -19px;}
+.player .p_btn .b_pre:hover{background-position:-83px -19px;}
+.player .p_btn .b_play{width:50px;height:50px;background-position:-338px -92px;display:none;}
+.player .p_btn .b_play:hover{background-position:-402px -92px;}
+
+.player .p_btn .b_pause{width:50px;height:50px;background-position:-19px -92px;}
+.player .p_btn .b_pause:hover{background-position:-83px -92px;}
+.player .p_btn .b_next{width:50px;height:50px;background-position:-338px -163px;}
+.player .p_btn .b_next:hover{background-position:-403px -163px;}
+.player .p_packup{width:16px;height:115px;background:url("images/sucai.jpg") no-repeat;float:right;cursor:pointer;}
+
+/*这块旋转特效自己找的....只弄了一个，而且不是一直旋转   待补*/
+.music  .m_one{-webkit-transition: -webkit-transform 2s ease-out;
+	-moz-transition: -moz-transform 2s ease-out;
+	-o-transition: -o-transform 2s ease-out;
+	-ms-transition: -ms-transform 2s ease-out;}
+.music  .m_one:hover{-webkit-transform: rotateZ(360deg);
+	-moz-transform: rotateZ(360deg);
+	-o-transform: rotateZ(360deg);
+	-ms-transform: rotateZ(360deg);
+	transform: rotateZ(360deg);
+	}
+/*end player*/
+</style>
+</head>
+
+<body>
+<!-- music start -->
+<div class="music">
+	<ul>
+		<li class="m_one">
+			<a href="#" class="items" title="平凡之路" data-url="mp3/pingfan.mp3"><img src="images/pingfan.jpg" alt="" width="60" height="60"></a>
+		</li>
+		<li class="m_two">
+			<a href="#" class="items" title="南山南" data-url="mp3/nan.mp3"><img src="images/nanshan.jpg" alt="" width="100" height="100"></a>
+		</li>
+		<li class="m_three">
+			<a href="#" class="items" title="丑八怪" data-url="mp3/chou.mp3"><img src="images/chou.jpg" alt="" width="130" height="130"></a>
+		</li>
+		<li class="m_four">
+			<a href="#" class="items" title="那些年" data-url="mp3/na.mp3"><img src="images/na.jpg" alt="" width="60" height="60"></a>
+		</li>
+		<li class="m_five">
+			<a href="#" class="items" title="LOSER" data-url="mp3/BigBang-Loser.mp3"><img src="images/loser.jpg" alt="" width="90" height="90"></a>
+		</li>
+
+	</ul>
+</div>
+<!-- end music -->
+<!-- player start -->
+<div class="player">
+	<div class="p_pic">
+		<img src="images/pingfan.jpg" alt="" width="90" height="90">
+		<p class="p_title">平凡之路</p>
+	</div>
+	<div class="p_btn">
+		<a href="#" class="b_pre"></a>
+		<a href="#" class="b_play"></a>
+		<a href="#" class="b_pause"></a>
+		<a href="#" class="b_next"></a>
+	</div>
+	<div class="p_packup"></div>
+	<div id="audiobox"><audio src="mp3/pingfan.mp3"></audio></div>
+</div>
+<script type="text/javascript" src="js/jquery-1.7.2.min.js"></script>
+<script type="text/javascript">
+	$(function(){
+		$(".p_packup").click(function(){
+			var width = $(".player").width() - 22;
+			var left = $(".player").offset().left;
+			//alert(left);
+			var n = 1;
+			if(left < 0){
+				n = 0;
+			}
+			$(".player").animate({left:-width*n},1000);
+		});
+		
+		//初始化播放器
+		var audioDom = createMap3("mp3/pingfan.mp3");
+		var index = 0;
+		audioDom.play();
+		//点击图片播放音乐
+		$(".items").click(function(){
+			var title = $(this).attr("title");
+			var url = $(this).data("url");
+			var imgsrc = $(this).find("img").attr("src");
+			$(".p_pic").find("img").attr("src",imgsrc);
+			$(".p_pic").find(".p_title").text(title);
+			
+			//重新初始化播放器
+			audioDom = createMap3(url);
+			//自动触发播放器的按钮
+			$(".b_play").trigger("click");
+			//$("items").find("img")
+		});
+		//播放
+		$(".b_play").click(function(){
+			$(this).hide();
+			$(".b_pause").show();
+			audioDom.play();
+		});
+		//暂停
+		$(".b_pause").click(function(){
+			$(this).hide();
+			$(".b_play").show();
+			audioDom.pause();
+		});
+		//上一首
+		$(".b_pre").click(function(){
+			index--;
+			$(".items").eq(index).trigger("click");
+		});
+		//下一首
+		$(".b_next").click(function(){
+			index++;
+			$(".items").eq(index).trigger("click");
+		});
+	});
+	//创建一个播放器
+	function createMap3(src){
+		//创建一个mp3的播放器
+		var audioDom = document.createElement("audio");
+		//设置播放器地址
+		audioDom.src = src;
+		document.getElementById("audiobox").innerHTML = "";
+		document.getElementById("audiobox").appendChild(audioDom);
+		return audioDom;
+		
+	}
+</script>
+<!-- end player -->
+</body>
+</html>
